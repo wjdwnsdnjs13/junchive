@@ -9,7 +9,7 @@
 # static
 - 모든 메서드가 static인 클래스.
 - inner class일 때만 클래스 자체에 static을 붙여서 사용할 수 있음.
-- 
+
 
 
 # 차이
