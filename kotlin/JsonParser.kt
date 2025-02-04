@@ -42,6 +42,16 @@ fun main() {
 //    println(jsonArray)
 //    println(parse(jsonArray))
 
+    println("---------------shortJson--------------------")
+
+    val shortJson = """{"name": "John", "age": 30}""".trimIndent()
+
+//    println(shortJson)
+
+    println(fromJson(shortJson))
+
+    println("-----------------Json-----------------")
+
     val json = """
         {
             "name": "John",
@@ -50,17 +60,39 @@ fun main() {
         }
     """.trimIndent()
 //    println(json)
-//    println(parse(json))
+    println(fromJson(json))
 
-    val shortJson = """{"name": "John", "age": 30, "car": null}""".trimIndent()
-//    println(shortJson)
-    println(parse(shortJson))
+
+    println("----------------toJson---------------")
+    val data: Map<String, Any?> = mapOf(
+        "name" to "John Doe",
+        "age" to 30L,
+        "address" to mapOf(
+            "street" to "123 Main St",
+            "city" to "Anytown",
+            "postalCode" to "12345"
+        ),
+        "phones" to listOf(
+            mapOf("type" to "home", "number" to "123-456-7890"),
+            mapOf("type" to "work", "number" to "098-765-4321")
+        ),
+        "isActive" to true,
+        "nullValue" to null
+    )
+    println(toJson(data))
 }
 
-fun parse(json: String): Any {
+fun toJson(data: Map<String, Any?>): String {
+    return data.entries.joinToString(
+        ",", "{", "}"
+    )
+}
+
+
+
+fun fromJson(json: String): Any {
 //    Json 파싱하는 로직 구현
 //    문자열 구분, 객체와 배열 처리
-    println("json: $json")
     val json = json.trim() // 공백 제거
     return when {
         json.startsWith("{") -> parseObject(json)
@@ -74,7 +106,6 @@ fun parseObject(json: String): Map<String, Any>{
     val result = mutableMapOf<String, Any>()
     var key = StringBuilder()
     var value = StringBuilder()
-    var inQuotes = false
     var isKey = true
     var i = 1 // 처음과 끝 제거({})
 
@@ -86,49 +117,87 @@ fun parseObject(json: String): Map<String, Any>{
                 c = json[++i]
                 // 빈 값일 경우 바로 삽입
                 if(c == '"') result[key.toString()] = ""
+                if(!isKey) value.append('"')
+                var playCount = 0
                 while(c != '"'){
+                    playCount++
                     c = json[i]
-                    inQuotes = !inQuotes
 
-                    if(inQuotes && isKey){
+                    if(isKey){
+                        key.append(c)
+                    } else {
                         value.append(c)
-                    } else if(!inQuotes && isKey){
-                        isKey = false
-                    } else if (!inQuotes){
-                        value.append(c)
-                        println("키는 : $key")
-                        println("값은 : $value")
-                        result[key.toString()] = parseValue(value.toString())
-                        key.clear()
-                        value.clear()
-                        isKey = true
                     }
                     i++
-                    if(i >= json.length) throw IllegalArgumentException("큰 따옴표가 닫히지 않았습니다.")
+                    if(i > json.length) throw IllegalArgumentException("큰 따옴표가 닫히지 않았습니다.")
+                    if(playCount >= 10_000) throw IllegalArgumentException("너무 길이가 깁니다.")
                 }
-
+                if(!isKey){
+                    result[key.toString()] = parseValue(value.toString())
+                    key.clear()
+                    value.clear()
+                    isKey = !isKey
+                } else {
+//                    키의 경우에는 맨 마지막 큰 따옴표 제거해줘야 함.
+                    key = StringBuilder(key.substring(0, key.length - 1))
+                }
+//                i가 +1된 상태이므로 돌려줌
+                i--
             }
             c.isDigit() -> {
+                value.append(c)
+                c = json[++i]
+                // 한 자리일 경우 바로 삽입
+                if(c == ',' || c == '}') result[key.toString()] = json[i - 1]
+                var playCount = 0
+                while(c != ',' && c != '}'){
+                    playCount++
+                    c = json[i]
+                    if(c == ',' || c == '}') break
+                    value.append(c)
+
+                    i++
+
+                    if(i > json.length) throw IllegalArgumentException("value가 끝나지 않았습니다.")
+                    // 우선 int 값 까지만 받기
+                    if(playCount >= 9) throw IllegalArgumentException("너무 길이가 깁니다.")
+                }
+                // 숫자 양 옆의 공백 제거
+                result[key.toString()] = parseValue(value.toString().trim())
+                key.clear()
+                value.clear()
+                isKey = !isKey
+
+//                i가 +1된 상태이므로 돌려줌
+                i--
 
             }
-            c == ':' && !inQuotes -> {
+            c == '-' -> {
+//                음수 구현
+            }
+            c == ':' -> {
                 isKey = false
             }
-            c == ',' && !inQuotes -> {
+            c == ',' -> {
                 isKey = true
             }
+//            어디까지 범위로 해서 다시 넘겨 받아야 할지 고민...
+//            json의 길이를 리턴 받아서 끊긴 범위부터 이어가게 해도 될 것 같음.
+//            c == '{' -> {
+//                parseObject(json.substring(i))
+//            }
+//            c == '[' -> {
+//                parseArray(json.substring(i))
+//            }
+//            큰 따옴표 밖의 띄어쓰기와 줄바꿈은 무시
+            c == ' ' || c == '\n' -> {}
+            c == '}' -> break
             else -> {
-                // 큰 따옴표 안이 아닌 공백은 전부 무시
-                if (inQuotes && isKey){
-                    key.append(c)
-                }else if(inQuotes){
-                    value.append(c)
-                }
+                throw IllegalArgumentException("올바르지 않은 데이터 형식입니다.")
             }
         }
         i++
     }
-    println("result: $result")
 
     return result
 }
