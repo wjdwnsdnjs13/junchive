@@ -20,35 +20,28 @@
 
 
 fun main() {
-    val jsonArray = """
-        {
-            [
-                {
-                    "name": "John",
-                    "age": 30,
-                    "car": null
-                },
-                {
-                    "name": "Jane",
-                    "age": 25,
-                    "car": {
-                        "model": "Audi",
-                        "year": 2020
-                    }
-                }
-            ]
-        }
-    """.trimIndent()
-//    println(jsonArray)
-//    println(parse(jsonArray))
-
-    println("---------------shortJson--------------------")
-
-    val shortJson = """{"name": "John", "age": 30}""".trimIndent()
-
-//    println(shortJson)
-
-    println(fromJson(shortJson))
+////    TODO : 배열 처리 추가 
+//    val jsonArray = """
+//        {
+//            [
+//                {
+//                    "name": "John",
+//                    "age": 30,
+//                    "car": null
+//                },
+//                {
+//                    "name": "Jane",
+//                    "age": 25,
+//                    "car": {
+//                        "model": "Audi",
+//                        "year": 2020
+//                    }
+//                }
+//            ]
+//        }
+//    """.trimIndent()
+////    println(jsonArray)
+//    println(fromJson(jsonArray))
 
     println("-----------------Json-----------------")
 
@@ -56,11 +49,22 @@ fun main() {
         {
             "name": "John",
             "age": 30,
-            "car": null
+            "car": {
+                "model": "Audi",
+                "year": 2020
+            }
         }
     """.trimIndent()
 //    println(json)
     println(fromJson(json))
+
+    println("---------------shortJson--------------------")
+
+    val shortJson = """{ "name": "Jane", "age": 25, "car": { "model": "Audi", "year": 2020 }}""".trimIndent()
+
+//    println(shortJson)
+
+    println(fromJson(shortJson))
 
 
     println("----------------toJson---------------")
@@ -130,7 +134,7 @@ fun parseObject(json: String): Map<String, Any>{
                     }
                     i++
                     if(i > json.length) throw IllegalArgumentException("큰 따옴표가 닫히지 않았습니다.")
-                    if(playCount >= 10_000) throw IllegalArgumentException("너무 길이가 깁니다.")
+                    if(playCount >= 100_000) throw IllegalArgumentException("너무 길이가 깁니다.")
                 }
                 if(!isKey){
                     result[key.toString()] = parseValue(value.toString())
@@ -155,7 +159,6 @@ fun parseObject(json: String): Map<String, Any>{
                     c = json[i]
                     if(c == ',' || c == '}') break
                     value.append(c)
-
                     i++
 
                     if(i > json.length) throw IllegalArgumentException("value가 끝나지 않았습니다.")
