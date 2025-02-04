@@ -186,9 +186,14 @@ fun parseObject(json: String): Map<String, Any>{
 //            c == '{' -> {
 //                parseObject(json.substring(i))
 //            }
-//            c == '[' -> {
-//                parseArray(json.substring(i))
-//            }
+//            null
+            c == 'n' -> {
+                if(isKey){
+                    throw IllegalArgumentException("키가 없습니다.")
+                }
+                result[key.toString()] = parseValue(json.substring(i, i + 4))
+                i += 3
+            }
 //            큰 따옴표 밖의 띄어쓰기와 줄바꿈은 무시
             c == ' ' || c == '\n' -> {}
             c == '}' -> break
@@ -246,6 +251,7 @@ fun parseValue(value: String): Any {
 //        Int
         intRegex.matches(value) -> value.toInt()
 //        null -> 아직 잘 모르겠음.
+        value.equals("null") -> "null"
         else -> throw IllegalArgumentException("잘 못된 형식의 데이터입니다.")
     }
 }
