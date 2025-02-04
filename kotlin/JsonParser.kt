@@ -197,6 +197,11 @@ fun parseObject(json: String): Map<String, Any>{
 //            큰 따옴표 밖의 띄어쓰기와 줄바꿈은 무시
             c == ' ' || c == '\n' -> {}
             c == '}' -> break
+            c == '{' -> {
+                val blockCloseCount = codeBlockCloseCountCalc('{', '}', json, i)
+                result[key.toString()] = parseObject(json.substring(i, blockCloseCount))
+                i = blockCloseCount
+            }
             else -> {
                 throw IllegalArgumentException("올바르지 않은 데이터 형식입니다.")
             }
