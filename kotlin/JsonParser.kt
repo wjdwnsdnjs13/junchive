@@ -207,6 +207,24 @@ fun parseObject(json: String): Map<String, Any>{
     return result
 }
 
+//코드 블럭 카운트 계산
+fun codeBlockCloseCountCalc(startPoint: Char, endPoint: Char, json: String, i: Int): Int {
+    var count = 1
+    var i = i + 1
+
+    while(count != 0){
+        val c = json[i++]
+        if(c == startPoint) count++
+        else if(c == endPoint) count--
+
+        if(i > json.length) throw IllegalArgumentException("value가 끝나지 않았습니다.")
+        // 우선 int 값 까지만 받기
+        if(count >= 100_000) throw IllegalArgumentException("너무 길이가 깁니다.")
+    }
+    println("codeBlockCloseCount: $i")
+    return i
+}
+
 //    배열 파싱
 fun parseArray(json: String): List<Any> {
     var result = mutableListOf<Any>()
