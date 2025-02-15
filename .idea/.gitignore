@@ -8,6 +8,7 @@
 /dataSources.local.xml
 
 .idea/
-/misc.xml
-/inspectionProfiles/Project_Default.xml
-/vcs.xml
+vcs.xml
+misc.xml
+workspace.xml
+inspectionProfiles/Project_Default.xml
