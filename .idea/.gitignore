@@ -12,3 +12,5 @@ vcs.xml
 misc.xml
 workspace.xml
 inspectionProfiles/Project_Default.xml
+modules.xml
+junchive.iml
