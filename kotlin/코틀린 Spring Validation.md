@@ -2,7 +2,7 @@
 ## Jakarta, Spring validation 차이는?
 validation을 찾아보다보면 jakarta 라이브러리도 있고, spring 라이브러리도 있다.
 그리고 validation에서 사용되는 대부분의 어노테이션들이 jakarta.validation 패키지에 속해있다.
-간단하게 설명하지면 jakarta.validation 패키지의 어노테이션은 표준이고, 실제 검증 로직 실행은 Spring Validation이 맡는다는 내용이다.
+간단하게 설명하자면 jakarta.validation 패키지의 어노테이션은 표준이고, 실제 검증 로직 실행은 Spring Validation이 맡는다는 내용이다.
 혹시나 이 내용이 궁금하다면 아래 정리된 글을 참고하면 도움이 될 것이다.
 * 글 수정 중입니다. *
 
@@ -13,7 +13,7 @@ spring에서 Validation을 사용하기 위해서는 의존성을 추가해야 �
 
 하여튼 우리는 validation을 사용하기 위해서 spring validation 라이브러리인 `spring-boot-starter-validation` 의존성을 추가해야 한다.
 ```
-implementation(”org.springframework.boot:spring-boot-starter-validation”)
+implementation("org.springframework.boot:spring-boot-starter-validation")
 ```
 
 ## Request 클래스에 validation 추가
@@ -22,7 +22,7 @@ data class MemberCreateRequest(
     @field:Size(min = 2, max = 50, message = "회원 별명은 2-50자 사이여야 합니다")
     val nickname: String,
     @field:NotBlank(message = "회원 비밀번호는 필수 입력값입니다")
-    @field:Size(min = 10, max = 30, message = "회원 비밀번호는은 10-30자 사이여야 합니다")
+    @field:Size(min = 10, max = 30, message = "회원 비밀번호는 10-30자 사이여야 합니다")
     val password: String,
     @field:NotBlank(message = "회원의 성은 필수 입력값입니다")
     @field:Size(min = 2, max = 50, message = "회원의 성은 2-50자 사이여야 합니다")
